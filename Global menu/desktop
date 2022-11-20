@@ -1,0 +1,513 @@
+#! /bin/sh
+
+## Cosmic Desktop is a macOS like desktop for ZorinOS with global menus and including great features such as the Pop!_OS window tiling.
+## 
+
+mkdir zorin-desktop
+
+## System softwares
+
+sudo apt install -y gettext chrome-gnome-shell gnome-tweaks gnome-shell-extension-prefs nautilus-extension-fma plymouth-themes plymouth-theme-zorin-logo evolution-indicator node-typescript make git
+
+# Apple compatibility
+sudo apt install -y airport-utils alac-decoder hfsplus hfsprogs netatalk ipheth-utils libimobiledevice-utils libusbmuxd-tools macfanctld pommed pyicloud
+
+# Bauh package manager
+echo "[Desktop Entry]
+Type=Application
+Name=Bauh.desktop
+Name[fr_FR]=Bauh
+Comment[fr_FR]=Bauh - installe et supprime les applications Snap, Flatpak & Appimage
+Exec=bauh --tray
+" > $HOME'/zorin-desktop/bauh.desktop'
+sudo mv $HOME'/zorin-desktop/bauh.desktop' /etc/xdg/autostart
+
+echo "[Desktop Entry]
+Type=Application
+Name=Update Bauh
+Name[fr]=Mettre à jour Bauh
+Exec=pip3 install bauh --upgrade
+" > $HOME'/zorin-desktop/bauh-upgrade.desktop'
+sudo mv $HOME'/zorin-desktop/bauh-upgrade.desktop' /etc/xdg/autostart
+
+sudo apt install -y python3-pip python3-yaml python3-dateutil python3-pyqt5 python3-packaging python3-requests aptitude timeshift aria2 axel sqlite3
+sudo pip3 install bauh
+
+#sudo mkdir /Applications && sudo mkdir '/usr/local/share/bauh' sudo ln -s '/Applications' '/usr/local/share/bauh/installed' 
+
+## XFCE4 Panel
+
+# XFCE4 settings
+echo '<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <property name="dark-mode" type="bool" value="false"/>
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="icon-size" type="uint" value="24"/>
+      <property name="size" type="uint" value="28"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+      </property>
+      <property name="background-style" type="uint" value="0"/>
+      <property name="background-rgba" type="array">
+        <value type="double" value="1.000000"/>
+      </property>
+      <property name="enter-opacity" type="uint" value="75"/>
+      <property name="leave-opacity" type="uint" value="75"/>
+      <property name="autohide-behavior" type="uint" value="0"/>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <property name="plugin-1" type="string" value="zorinmenulite"/>
+    <property name="plugin-2" type="string" value="separator">
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-3" type="string" value="appmenu">
+      <property name="plugins" type="empty">
+        <property name="plugin-3" type="empty">
+          <property name="compact-mode" type="bool" value="false"/>
+          <property name="bold-application-name" type="bool" value="true"/>
+          <property name="expand" type="bool" value="false"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+' > $HOME'/zorin-desktop/default.xml'
+sudo cp $HOME'/zorin-desktop/default.xml' /etc/xdg/xfce4/panel
+mv $HOME'/zorin-desktop/default.xml' $HOME'/.config/xfce4/xfconf/xfce-perchannel-xml'
+
+# Autostart XFCE4 Panel
+sudo echo "[Desktop Entry]
+Type=Application
+Exec=xfce4-panel
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=XFCE4 Panel
+Comment=XFCE4 Panel Cosmic Menu
+" > $HOME'/zorin-desktop/xfce4-panel.desktop'
+sudo mv $HOME'/zorin-desktop/xfce4-panel.desktop' /etc/xdg/autostart
+
+
+
+# Install XFCE4 Panel
+sudo apt install -y appmenu-gtk-module-common appmenu-gtk2-module appmenu-gtk3-module xfce4-panel xfce4-appmenu-plugin xfce4-zorinmenulite-plugin xfce4-terminal zorin-appearance-layouts-xfce-core gnome-sushi
+
+# Overview
+sudo echo "[Desktop Entry]
+Type=Application
+Name=Overview
+Icon=multitasking-view
+Exec=dbus-send --session --type=method_call --dest=org.gnome.Shell /org/gnome/Shell org.gnome.Shell.Eval string:'Main.overview.show();'
+NoDisplay=true
+Comment=
+" > $HOME'/zorin-desktop/overview.desktop'
+sudo mv $HOME'/zorin-desktop/overview.desktop' /usr/share/applications
+
+## GTK ##
+GTK3=$HOME/.config/gtk-3.0
+if [ ! -d "$GTK3" ]; then
+    mkdir $GTK3
+fi
+
+CSS=\
+"menubar.-vala-panel-appmenu-bold > menuitem:first-child > label {
+     font-family: 'Ubuntu Bold';
+  }
+
+menu {
+    font-family: 'Ubuntu Medium';
+    font-style: bold;
+    font-size: 14px;
+    opacity: 0.92;
+  }
+"
+if [ ! -f "$GTK3"/gtk.css ]; then
+    echo "$CSS" > $GTK3/gtk.css
+else
+    echo "" >> $GTK3/gtk.css
+    echo "$CSS" >> $GTK3/gtk.css
+fi
+
+
+settings='gtk-modules="appmenu-gtk-module"
+gtk-enable-mnemonics = 0'
+if [ ! -f "$GTK3"/settings.ini ]; then
+    echo "$settings" > $GTK3/settings.ini
+else
+    echo "" >> $GTK3/.gtkrc-2.0
+    echo "$settings" >> $GTK3/settings.ini
+fi
+
+GTK2=$HOME/.config/gtk-2.0
+if [ ! -d "$GTK2" ]; then
+    mkdir $GTK2
+fi
+
+gtkrc2='gtk-modules="appmenu-gtk-module"
+gtk-enable-mnemonics = 0'
+if [ ! -f "$GTK2"/.gtkrc-2.0 ]; then
+    echo "$gtkrc2" > $GTK2/.gtkrc-2.0
+else
+    echo "" >> $GTK2/.gtkrc-2.0
+    echo "$gtkrc2" >> $GTK2/.gtkrc-2.0
+fi
+
+
+## Gnome Shell extensions
+# Dash to Panel [extensions/dash-to-panel]
+wget https://github.com/M-Rick/ZorinOS/blob/f6bac78ba5819260a63d54f4fccc518d9614fb3b/Extensions/dash-to-panel@jderose9.github.com.zip
+unzip dash-to-panel@jderose9.github.com.zip
+sudo mv '/home/aymeric/Bureau/dash-to-panel@jderose9.github.com' '/usr/share/gnome-shell/extensions'
+rm -f dash-to-panel@jderose9.github.com.zip
+
+echo "[/]
+[extensions/dash-to-panel]
+animate-appicon-hover-animation-extent={'RIPPLE': 4, 'PLANK': 4, 'SIMPLE': 1}
+appicon-margin=4
+available-monitors=[0]
+hotkeys-overlay-combo='TEMPORARILY'
+panel-anchors='{"0":"END"}'
+panel-element-positions='{"0":[{"element":"showAppsButton","visible":false,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":false,"position":"stackedTL"},{"element":"taskbar","visible":false,"position":"stackedTL"},{"element":"centerBox","visible":false,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":true,"position":"stackedBR"},{"element":"systemMenu","visible":true,"position":"stackedBR"},{"element":"desktopButton","visible":false,"position":"stackedBR"}]}'
+panel-lengths='{"0":26}'
+panel-positions='{"0":"TOP"}'
+panel-sizes='{"0":28}'
+trans-panel-opacity=0.0
+trans-use-custom-opacity=true
+tray-padding=3
+" > $HOME'/zorin-desktop/dash-to-panel.ini'
+dconf load / < $HOME'/zorin-desktop/dash-to-panel.ini'
+rm -f $HOME'/zorin-desktop/dash-to-panel.ini'
+
+# Blur My Shell [extensions/blur-my-shell]
+wget https://github.com/M-Rick/ZorinOS/blob/f6bac78ba5819260a63d54f4fccc518d9614fb3b/Extensions/blur-my-shell@aunetx.zip
+unzip blur-my-shell@aunetx.zip
+sudo mv '/home/aymeric/Bureau/blur-my-shell@aunetx' '/usr/share/gnome-shell/extensions'
+rm -f blur-my-shell@aunetx.zip
+
+echo "[/]
+[extensions/blur-my-shell]
+blur-dash=false
+blur-lockscreen=false
+blur-panel=false
+" > $HOME'/zorin-desktop/blur-my-shell.ini'
+dconf load / < $HOME'/zorin-desktop/blur-my-shell.ini'
+rm -f $HOME'/zorin-desktop/blur-my-shell.ini'
+
+# Dash to Dock [extensions/dash-to-dock]
+wget https://github.com/M-Rick/ZorinOS/blob/f6bac78ba5819260a63d54f4fccc518d9614fb3b/Extensions/dash-to-dock@micxgx.gmail.com.zip
+unzip dash-to-dock@micxgx.gmail.com.zip
+sudo mv '/home/aymeric/Bureau/dash-to-dock@micxgx.gmail.com' '/usr/share/gnome-shell/extensions'
+rm -f dash-to-dock@micxgx.gmail.com.zip
+
+echo "[/]
+[extensions/dash-to-dock]
+dock-position='BOTTOM'
+running-indicator-style='DOTS'
+" > $HOME'/zorin-desktop/dash-to-dock.ini'
+dconf load / < $HOME'/zorin-desktop/dash-to-dock.ini'
+rm -f $HOME'/zorin-desktop/dash-to-dock.ini'
+
+
+# Pop!_OS Window Tiling [org/gnome/shell/extensions/pop-shell]
+wget https://github.com/M-Rick/ZorinOS/blob/f6bac78ba5819260a63d54f4fccc518d9614fb3b/Extensions/pop-shell@system76.com.zip
+unzip pop-shell@system76.com.zip
+sudo mv '/home/aymeric/Bureau/pop-shell@system76.com' '/usr/share/gnome-shell/extensions'
+rm -f pop-shell@system76.com.zip
+
+echo "[/]
+[org/gnome/shell/extensions/pop-shell]
+gap-inner=uint32 1
+gap-outer=uint32 1
+tile-by-default=false
+toggle-tiling=['F12']
+" > $HOME'/zorin-desktop/pop-shell.ini'
+dconf load / < $HOME'/zorin-desktop/pop-shell.ini'
+rm -f $HOME'/zorin-desktop/pop-shell.ini'
+
+# Zorin Dash [org/gnome/shell/extensions/zorin-dash]
+echo "[/]
+[org/gnome/shell/extensions/zorin-dash]
+apply-custom-theme=false
+custom-background-color=false
+custom-theme-shrink=true
+dock-position='BOTTOM'
+force-straight-corner=false
+multi-monitor=true
+running-indicator-style='DOTS'
+show-apps-at-top=true
+show-show-apps-button=true
+show-trash=true
+" > $HOME'/zorin-desktop/zorin-dash.ini'
+dconf load / < $HOME'/zorin-desktop/zorin-dash.ini'
+rm -f $HOME'/zorin-desktop/zorin-dash.ini'
+
+# Zorin Desktop Icons [org/gnome/shell/extensions/zorin-desktop-icons]
+echo "[/]
+[org/gnome/shell/extensions/zorin-desktop-icons]
+show-network-volumes=true
+show-trash=true
+show-volumes=true
+add-volumes-opposite=false
+start-corner='top-right'
+sort-special-folders=true
+arrangeorder='KIND'
+" > $HOME'/zorin-desktop/zorin-desktop-icons.ini'
+dconf load / < $HOME'/zorin-desktop/zorin-desktop-icons.ini'
+rm -f $HOME'/zorin-desktop/zorin-desktop-icons.ini'
+
+# Gnome Shell Extensions Activation
+gnome-extensions disable zorin-dash@zorinos.com
+gnome-extensions disable zorin-taskbar@zorinos.com
+gnome-extensions disable zorin-window-move-effect@zorinos.com
+gnome-extensions disable drive-menu@gnome-shell-extensions.gcampax.github.com
+gnome-extensions disable zorin-hide-activities-move-clock@zorinos.com
+gnome-extensions disable apps-menu@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable pop-shell@system76.com
+gnome-extensions enable blur-my-shell@aunetx
+gnome-extensions enable dash-to-panel@jderose9.github.com
+gnome-extensions enable transparent-shell@siroj42.github.io
+gnome-extensions enable multi-monitors-add-on@spin83
+#gnome-extensions disable zorin-desktop-icons@zorinos.com
+
+
+## Nautilus
+#[org/gnome/nautilus/list-view]
+echo "
+[org/gnome/nautilus/list-view]
+default-column-order=['name', 'size', 'type', 'owner', 'group', 'permissions', 'where', 'date_modified', 'date_modified_with_time', 'date_accessed', 'recency', 'starred', 'detailed_type']
+default-visible-columns=['name', 'size', 'type', 'date_modified', 'starred']
+default-zoom-level='small'
+use-tree-view=true
+" > $HOME'/zorin-desktop/nautilus-list-view.ini'
+dconf load / < $HOME'/zorin-desktop/nautilus-list-view.ini'
+rm -f $HOME'/zorin-desktop/nautilus-list-view.ini'
+
+#[org/gnome/nautilus/preferences]
+echo "
+[org/gnome/nautilus/preferences]
+click-policy='double'
+default-folder-viewer='icon-view'
+executable-text-activation='launch'
+search-filter-time-type='last_modified'
+search-view='list-view'
+show-create-link=true
+" > $HOME'/zorin-desktop/nautilus-preferences.ini'
+dconf load / < $HOME'/zorin-desktop/nautilus-preferences.ini'
+rm -f $HOME'/zorin-desktop/nautilus-preferences.ini'
+
+#[org/gnome/nautilus/window-state]
+echo "
+[org/gnome/nautilus/window-state]
+sidebar-width=194
+" > $HOME'/zorin-desktop/nautilus-preferences.ini'
+dconf load / < $HOME'/zorin-desktop/nautilus-preferences.ini'
+rm -f $HOME'/zorin-desktop/nautilus-preferences.ini'
+
+# Enable Nautilus Typeahead Find
+sudo add-apt-repository -y ppa:lubomir-brindza/nautilus-typeahead
+sudo apt dist-upgrade
+
+echo "
+enable-interactive=false
+" > $HOME'/zorin-desktop/nautilus-typeahead.ini'
+dconf load / < $HOME'/zorin-desktop/nautilus-typeahead.ini'
+rm -f $HOME'/zorin-desktop/nautilus-typeahead.ini'
+
+
+## Gnome Shell
+#[org/gnome/desktop/interface]
+echo "
+[org/gnome/desktop/interface]
+clock-show-weekday=true
+" > $HOME'/zorin-desktop/gnome-interface.ini'
+dconf load / < $HOME'/zorin-desktop/gnome-interface.ini'
+rm -f $HOME'/zorin-desktop/gnome-interface.ini'
+
+#[org/gnome/desktop/wm/preferences]
+echo "
+[org/gnome/desktop/wm/preferences]
+button-layout='close,minimize,maximize:appmenu'
+" > $HOME'/zorin-desktop/gnome-preferences.ini'
+dconf load / < $HOME'/zorin-desktop/gnome-preferences.ini'
+rm -f $HOME'/zorin-desktop/gnome-preferences.ini'
+
+# Calendar
+echo "
+[org/gnome/desktop/calendar]
+show-weekdate=true
+" > $HOME'/zorin-desktop/gnome-calendar.ini'
+dconf load / < $HOME'/zorin-desktop/gnome-calendar.ini'
+rm -f $HOME'/zorin-desktop/gnome-calendar.ini'
+
+# Weather
+echo "
+[org/gnome/shell/weather]
+automatic-location=true
+locations=@av []
+" > $HOME'/zorin-desktop/gnome-weather.ini'
+dconf load / < $HOME'/zorin-desktop/gnome-weather.ini'
+rm -f $HOME'/zorin-desktop/gnome-weather.ini'
+
+# Appmenu GTK Module
+echo "
+[org/appmenu/gtk-module]
+always-show-inner-menu=true
+" > $HOME'/zorin-desktop/gtk-module.ini'
+dconf load / < $HOME'/zorin-desktop/gtk-module.ini'
+rm -f $HOME'/zorin-desktop/gtk-module.ini'
+
+
+## ZorinOS Interface ##
+# Fonts
+echo "
+document-font-name='Ubuntu Regular 10'
+font-name='Ubuntu  10'
+monospace-font-name='Fira Mono 9'
+" > $HOME'/zorin-desktop/fonts.ini'
+dconf load / < $HOME'/zorin-desktop/fonts.ini'
+rm -f $HOME'/zorin-desktop/fonts.ini'
+
+
+# Night Shift
+echo "
+[org/gnome/settings-daemon/plugins/color]
+night-light-enabled=true
+night-light-schedule-automatic=false
+night-light-temperature=uint32 3200
+" > $HOME'/zorin-desktop/night-shift.ini'
+dconf load / < $HOME'/zorin-desktop/night-shift.ini'
+rm -f $HOME'/zorin-desktop/night-shift.ini'
+
+
+## Keybindings (Mac specific bindings)
+echo "[/]
+[org/gnome/shell/keybindings]
+toggle-application-view=['F4']
+toggle-overview=['F3']
+" > $HOME'/zorin-desktop/zorin-shell-keybindings.ini'
+dconf load / < $HOME'/zorin-desktop/zorin-shell-keybindings.ini'
+rm -f $HOME'/zorin-desktop/zorin-shell-keybindings.ini'
+
+echo "[/]
+[org/gnome/desktop/input-sources]
+sources=[('xkb', 'fr+mac')]
+xkb-options=['ctrl:swap_lwin_lctl', 'ctrl:swap_rwin_rctl', 'lv3:lalt_switch', 'compose:ralt', 'eurosign:e', 'mod_led:compose', 'numpad:mac']
+" > $HOME'/zorin-desktop/zorin-desktop-input-sources.ini'
+dconf load / < $HOME'/zorin-desktop/zorin-desktop-input-sources.ini'
+rm -f $HOME'/zorin-desktop/zorin-desktop-input-sources.ini'
+
+echo "[/]
+[org/gnome/desktop/wm/keybindings]
+close=['<Primary>w']
+panel-main-menu=['F10']
+show-desktop=['<Primary><Super>d', '<Primary><Alt>d', '<Super>d', 'F11']
+switch-applications=['<Primary>Tab']
+switch-applications-backward=['<Primary><Shift>Tab']
+switch-group=['<Super>Tab']
+switch-group-backward=['<Shift><Super>Tab']
+toggle-fullscreen=['<Shift>F11']
+" > $HOME'/zorin-desktop/zorin-wm-keybindings.ini'
+dconf load / < $HOME'/zorin-desktop/zorin-wm-keybindings.ini'
+rm -f $HOME'/zorin-desktop/zorin-wm-keybindings.ini'
+
+echo "[/]
+[org/gnome/settings-daemon/plugins/media-keys]
+screenshot=['Print', '<Primary><Shift>3']
+screenshot-clip=['<Ctrl>Print', '<Primary><Shift><Super>3']
+window-screenshot=['<Alt>Print', '<Primary><Shift>4']
+window-screenshot-clip=['<Ctrl><Alt>Print', '<Primary><Shift><Super>4']
+area-screenshot=['<Shift>Print', '<Primary><Shift>5']
+area-screenshot-clip=['<Ctrl><Shift>Print', '<Primary><Shift><Super>5']
+" > $HOME'/zorin-desktop/zorin-media-keys.ini'
+dconf load / < $HOME'/zorin-desktop/zorin-media-keys.ini'
+rm -f $HOME'/zorin-desktop/zorin-media-keys.ini'
+
+
+## Restart Gnome Shell
+busctl --user call "org.gnome.Shell" "/org/gnome/Shell" "org.gnome.Shell" "Eval" "s" 'Meta.restart("Restarting…")'
+
+
+## Terminal settings [org/gnome/terminal/legacy/keybindings]
+full-screen='<Shift>F11'
+
+
+### 2 - LibreOffice setup ###
+## LibreOffice
+sudo apt install libreoffice-base libreoffice-style-sukapura
+LIBREOFFICE=~/.config/libreoffice/4/user
+
+## Set Sukapura theme
+if [ ! -f "$LIBREOFFICE/registrymodifications.xcu" ]; then
+    mkdir $LIBREOFFICE
+    echo "<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="FirstRun" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="Persona" oor:op="fuse"><value>no</value></prop></item>
+<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="PersonaSettings" oor:op="fuse"><value></value></prop></item>
+<item oor:path="/org.openoffice.Office.Logging/Settings"><node oor:name="unopkg" oor:op="replace"><prop oor:name="LogLevel" oor:op="fuse"><value>2147483647</value></prop><prop oor:name="DefaultHandler" oor:op="fuse"><value>com.sun.star.logging.FileHandler</value></prop><node oor:name="HandlerSettings"><prop oor:name="FileURL" oor:op="fuse"><value>$(userurl)/$(loggername).log</value></prop></node><prop oor:name="DefaultFormatter" oor:op="fuse"><value>com.sun.star.logging.PlainTextFormatter</value></prop><node oor:name="FormatterSettings"></node></node></item>
+<item oor:path="/org.openoffice.Office.Recovery/RecoveryInfo"><prop oor:name="SessionData" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Setup/L10N"><prop oor:name="ooLocale" oor:op="fuse"><value>fr</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office/Factories/org.openoffice.Setup:Factory['com.sun.star.frame.StartModule']"><prop oor:name="ooSetupFactoryWindowAttributes" oor:op="fuse"><value>0,36,1326,801;5;0,36,1440,816;</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office"><prop oor:name="LastCompatibilityCheckID" oor:op="fuse"><value>30(Build:2)</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office"><prop oor:name="OfficeRestartInProgress" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office"><prop oor:name="ooSetupInstCompleted" oor:op="fuse"><value>true</value></prop></item>
+</oor:items>
+" > $HOME'/zorin-desktop/libreoffice'
+    mv $HOME'/zorin-desktop/libreoffice' "$LIBREOFFICE/registrymodifications.xcu"
+else
+    if grep -q SymbolStyle "$LIBREOFFICE/registrymodifications.xcu"; then
+    sed -i 's#<prop oor:name="SymbolStyle" oor:op="fuse"><value>.*</value></prop>#<prop oor:name="SymbolStyle" oor:op="fuse"><value>sukapura</value></prop>#' $LIBREOFFICE'/user/registrymodifications.xcu'
+    else
+    sed -i '$i' '<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="SymbolStyle" oor:op="fuse"><value>sukapura</value></prop></item>' $LIBREOFFICE'/user/registrymodifications.xcu'
+	fi
+fi
+
+## Set light theme for LibreOffice
+# libreoffice-startcenter.desktop
+if [ -d "$LIBREOFFICE"-startcenter.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice %U/Exec=env GTK_THEME=Pop libreoffice %U/' $LIBREOFFICE'-startcenter.desktop'
+fi
+# libreoffice-base.desktop
+if [ -d "$LIBREOFFICE"-base.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice --base %U/Exec=env GTK_THEME=Pop libreoffice --base %U/' $LIBREOFFICE'-writer.desktop'
+fi
+# libreoffice-calc.desktop
+if [ -d "$LIBREOFFICE"-calc.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice --calc %U/Exec=env GTK_THEME=Pop libreoffice --calc %U/' $LIBREOFFICE'-calc.desktop'
+fi
+# libreoffice-draw.desktop
+if [ -d "$LIBREOFFICE"-draw.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice --draw %U/Exec=env GTK_THEME=Pop libreoffice --draw %U/' $LIBREOFFICE'-draw.desktop'
+fi
+# libreoffice-impress.desktop
+if [ -d "$LIBREOFFICE"-impress.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice --impress %U/Exec=env GTK_THEME=Pop libreoffice --impress %U/' $LIBREOFFICE'-impress.desktop'
+fi
+# libreoffice-math.desktop
+if [ -d "$LIBREOFFICE"-math.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice --math %U/Exec=env GTK_THEME=Pop libreoffice --math %U/' $LIBREOFFICE'/-math.desktop'
+fi
+# libreoffice-writer.desktop
+if [ -d "$LIBREOFFICE"-writer.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice --writer %U/Exec=env GTK_THEME=Pop libreoffice --writer %U/' $LIBREOFFICE'-writer.desktop'
+fi
+# libreoffice-xsltfilter.desktop
+if [ -d "$LIBREOFFICE"-xsltfilter.desktop ]; then
+    sudo sed -i 's/Exec=libreoffice %U/Exec=env GTK_THEME=Pop libreoffice %U/' $LIBREOFFICE'-xsltfilter.desktop'
+fi
+
+### 3 - Export global dconf settings ###
+## Load new settings
+
+rm -rf ~/zorin-desktop
+sudo reboot
