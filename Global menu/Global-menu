@@ -170,17 +170,17 @@ unzip dash-to-panel@jderose9.github.com.zip
 sudo mv '/home/aymeric/Bureau/dash-to-panel@jderose9.github.com' '/usr/share/gnome-shell/extensions'
 rm -f dash-to-panel@jderose9.github.com.zip
 
-echo "[/]
-[extensions/dash-to-panel]
+echo "[extensions/dash-to-panel]
 animate-appicon-hover-animation-extent={'RIPPLE': 4, 'PLANK': 4, 'SIMPLE': 1}
 appicon-margin=4
-available-monitors=[0]
+available-monitors=[0, 1]
 hotkeys-overlay-combo='TEMPORARILY'
 panel-anchors='{"0":"END"}'
 panel-element-positions='{"0":[{"element":"showAppsButton","visible":false,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":false,"position":"stackedTL"},{"element":"taskbar","visible":false,"position":"stackedTL"},{"element":"centerBox","visible":false,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":true,"position":"stackedBR"},{"element":"systemMenu","visible":true,"position":"stackedBR"},{"element":"desktopButton","visible":false,"position":"stackedBR"}]}'
 panel-lengths='{"0":26}'
 panel-positions='{"0":"TOP"}'
 panel-sizes='{"0":28}'
+primary-monitor=0
 trans-panel-opacity=0.0
 trans-use-custom-opacity=true
 tray-padding=3
@@ -194,8 +194,7 @@ unzip blur-my-shell@aunetx.zip
 sudo mv '/home/aymeric/Bureau/blur-my-shell@aunetx' '/usr/share/gnome-shell/extensions'
 rm -f blur-my-shell@aunetx.zip
 
-echo "[/]
-[extensions/blur-my-shell]
+echo "[extensions/blur-my-shell]
 blur-dash=false
 blur-lockscreen=false
 blur-panel=false
@@ -209,10 +208,13 @@ unzip dash-to-dock@micxgx.gmail.com.zip
 sudo mv '/home/aymeric/Bureau/dash-to-dock@micxgx.gmail.com' '/usr/share/gnome-shell/extensions'
 rm -f dash-to-dock@micxgx.gmail.com.zip
 
-echo "[/]
-[extensions/dash-to-dock]
+echo "[extensions/dash-to-dock]
 dock-position='BOTTOM'
 running-indicator-style='DOTS'
+click-action='minimize'
+custom-theme-shrink=true
+multi-monitor=true
+preferred-monitor=0
 " > $HOME'/zorin-desktop/dash-to-dock.ini'
 dconf load / < $HOME'/zorin-desktop/dash-to-dock.ini'
 rm -f $HOME'/zorin-desktop/dash-to-dock.ini'
@@ -224,8 +226,7 @@ unzip pop-shell@system76.com.zip
 sudo mv '/home/aymeric/Bureau/pop-shell@system76.com' '/usr/share/gnome-shell/extensions'
 rm -f pop-shell@system76.com.zip
 
-echo "[/]
-[org/gnome/shell/extensions/pop-shell]
+echo "[org/gnome/shell/extensions/pop-shell]
 gap-inner=uint32 1
 gap-outer=uint32 1
 tile-by-default=false
@@ -235,8 +236,7 @@ dconf load / < $HOME'/zorin-desktop/pop-shell.ini'
 rm -f $HOME'/zorin-desktop/pop-shell.ini'
 
 # Zorin Dash [org/gnome/shell/extensions/zorin-dash]
-echo "[/]
-[org/gnome/shell/extensions/zorin-dash]
+echo "[org/gnome/shell/extensions/zorin-dash]
 apply-custom-theme=false
 custom-background-color=false
 custom-theme-shrink=true
@@ -252,8 +252,7 @@ dconf load / < $HOME'/zorin-desktop/zorin-dash.ini'
 rm -f $HOME'/zorin-desktop/zorin-dash.ini'
 
 # Zorin Desktop Icons [org/gnome/shell/extensions/zorin-desktop-icons]
-echo "[/]
-[org/gnome/shell/extensions/zorin-desktop-icons]
+echo "[org/gnome/shell/extensions/zorin-desktop-icons]
 show-network-volumes=true
 show-trash=true
 show-volumes=true
@@ -282,8 +281,7 @@ gnome-extensions enable multi-monitors-add-on@spin83
 
 ## Nautilus
 #[org/gnome/nautilus/list-view]
-echo "
-[org/gnome/nautilus/list-view]
+echo "[org/gnome/nautilus/list-view]
 default-column-order=['name', 'size', 'type', 'owner', 'group', 'permissions', 'where', 'date_modified', 'date_modified_with_time', 'date_accessed', 'recency', 'starred', 'detailed_type']
 default-visible-columns=['name', 'size', 'type', 'date_modified', 'starred']
 default-zoom-level='small'
@@ -293,8 +291,7 @@ dconf load / < $HOME'/zorin-desktop/nautilus-list-view.ini'
 rm -f $HOME'/zorin-desktop/nautilus-list-view.ini'
 
 #[org/gnome/nautilus/preferences]
-echo "
-[org/gnome/nautilus/preferences]
+echo "[org/gnome/nautilus/preferences]
 click-policy='double'
 default-folder-viewer='icon-view'
 executable-text-activation='launch'
@@ -306,8 +303,7 @@ dconf load / < $HOME'/zorin-desktop/nautilus-preferences.ini'
 rm -f $HOME'/zorin-desktop/nautilus-preferences.ini'
 
 #[org/gnome/nautilus/window-state]
-echo "
-[org/gnome/nautilus/window-state]
+echo "[org/gnome/nautilus/window-state]
 sidebar-width=194
 " > $HOME'/zorin-desktop/nautilus-preferences.ini'
 dconf load / < $HOME'/zorin-desktop/nautilus-preferences.ini'
@@ -326,32 +322,28 @@ rm -f $HOME'/zorin-desktop/nautilus-typeahead.ini'
 
 ## Gnome Shell
 #[org/gnome/desktop/interface]
-echo "
-[org/gnome/desktop/interface]
+echo "[org/gnome/desktop/interface]
 clock-show-weekday=true
 " > $HOME'/zorin-desktop/gnome-interface.ini'
 dconf load / < $HOME'/zorin-desktop/gnome-interface.ini'
 rm -f $HOME'/zorin-desktop/gnome-interface.ini'
 
 #[org/gnome/desktop/wm/preferences]
-echo "
-[org/gnome/desktop/wm/preferences]
+echo "[org/gnome/desktop/wm/preferences]
 button-layout='close,minimize,maximize:appmenu'
 " > $HOME'/zorin-desktop/gnome-preferences.ini'
 dconf load / < $HOME'/zorin-desktop/gnome-preferences.ini'
 rm -f $HOME'/zorin-desktop/gnome-preferences.ini'
 
 # Calendar
-echo "
-[org/gnome/desktop/calendar]
+echo "[org/gnome/desktop/calendar]
 show-weekdate=true
 " > $HOME'/zorin-desktop/gnome-calendar.ini'
 dconf load / < $HOME'/zorin-desktop/gnome-calendar.ini'
 rm -f $HOME'/zorin-desktop/gnome-calendar.ini'
 
 # Weather
-echo "
-[org/gnome/shell/weather]
+echo "[org/gnome/shell/weather]
 automatic-location=true
 locations=@av []
 " > $HOME'/zorin-desktop/gnome-weather.ini'
@@ -359,8 +351,7 @@ dconf load / < $HOME'/zorin-desktop/gnome-weather.ini'
 rm -f $HOME'/zorin-desktop/gnome-weather.ini'
 
 # Appmenu GTK Module
-echo "
-[org/appmenu/gtk-module]
+echo "[org/appmenu/gtk-module]
 always-show-inner-menu=true
 " > $HOME'/zorin-desktop/gtk-module.ini'
 dconf load / < $HOME'/zorin-desktop/gtk-module.ini'
@@ -379,8 +370,7 @@ rm -f $HOME'/zorin-desktop/fonts.ini'
 
 
 # Night Shift
-echo "
-[org/gnome/settings-daemon/plugins/color]
+echo "[org/gnome/settings-daemon/plugins/color]
 night-light-enabled=true
 night-light-schedule-automatic=false
 night-light-temperature=uint32 3200
@@ -390,24 +380,21 @@ rm -f $HOME'/zorin-desktop/night-shift.ini'
 
 
 ## Keybindings (Mac specific bindings)
-echo "[/]
-[org/gnome/shell/keybindings]
+echo "[org/gnome/shell/keybindings]
 toggle-application-view=['F4']
 toggle-overview=['F3']
 " > $HOME'/zorin-desktop/zorin-shell-keybindings.ini'
 dconf load / < $HOME'/zorin-desktop/zorin-shell-keybindings.ini'
 rm -f $HOME'/zorin-desktop/zorin-shell-keybindings.ini'
 
-echo "[/]
-[org/gnome/desktop/input-sources]
+echo "[org/gnome/desktop/input-sources]
 sources=[('xkb', 'fr+mac')]
 xkb-options=['ctrl:swap_lwin_lctl', 'ctrl:swap_rwin_rctl', 'lv3:lalt_switch', 'compose:ralt', 'eurosign:e', 'mod_led:compose', 'numpad:mac']
 " > $HOME'/zorin-desktop/zorin-desktop-input-sources.ini'
 dconf load / < $HOME'/zorin-desktop/zorin-desktop-input-sources.ini'
 rm -f $HOME'/zorin-desktop/zorin-desktop-input-sources.ini'
 
-echo "[/]
-[org/gnome/desktop/wm/keybindings]
+echo "[org/gnome/desktop/wm/keybindings]
 close=['<Primary>w']
 panel-main-menu=['F10']
 show-desktop=['<Primary><Super>d', '<Primary><Alt>d', '<Super>d', 'F11']
@@ -420,8 +407,7 @@ toggle-fullscreen=['<Shift>F11']
 dconf load / < $HOME'/zorin-desktop/zorin-wm-keybindings.ini'
 rm -f $HOME'/zorin-desktop/zorin-wm-keybindings.ini'
 
-echo "[/]
-[org/gnome/settings-daemon/plugins/media-keys]
+echo "[org/gnome/settings-daemon/plugins/media-keys]
 screenshot=['Print', '<Primary><Shift>3']
 screenshot-clip=['<Ctrl>Print', '<Primary><Shift><Super>3']
 window-screenshot=['<Alt>Print', '<Primary><Shift>4']
